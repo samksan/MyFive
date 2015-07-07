@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MyFive</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="getData">获取数据</string>
+    <string name="addData">添加一条数据</string>
+    <string name="showData">显示数据</string>
+</resources>
