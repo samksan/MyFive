@@ -3,8 +3,6 @@ package com.example.administrator.myfive;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
@@ -18,6 +16,8 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -46,31 +46,9 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
     public void getData(View view) {
         //从网络获取开奖数据并存入数据库
-        readURL("http://chart.cp.360.cn/zst/p3?span=30");
+        readURL("http://chart.cp.360.cn/zst/ln11?span=100");
 
 
 
@@ -103,26 +81,66 @@ public class MainActivity extends ActionBarActivity {
             @Override
             protected String doInBackground(String... params) {
                 try {
+                    //利用 url地址 创建 URL
                     URL url = new URL(params[0]);
 
+                    //连接 url
                     URLConnection urlConnection = url.openConnection();
                     urlConnection.setConnectTimeout(1000 * 10);
 
+                    //获取输入流
                     InputStream is = urlConnection.getInputStream();
 
+                    //输入流读取原网页内容
                     InputStreamReader isr = new InputStreamReader(is,"GBK");
+
+                    //根据输入流读取数据
                     BufferedReader br = new BufferedReader(isr);
 
+                    //临时字符串
                     String line;
+
+                    //字符串存储对象
                     StringBuilder builder = new StringBuilder();
 
+                    //把网页内容存储到 字符串存储实例
                     while ((line = br.readLine()) != null) {
-                        builder.append(line);
+                        //20150715-05</td><td class='tdbdr'></td><td class='tdbg_1' ><strong class='num'>01 05 04 08 09
+                        //8 1 2 68 2 1 2 1 2 1 2 1 2 = 93 //总字符数
+                        //8   2    2   2   2   2   2        //需要的字符数
+                        //0-7 9-10  79-80  82-83  85-86  88-89   91-92
+                        //创建 Pattern 实例 并用该实例创建 Matcher 实例
+                        String patternString = "\\d{8}" + "-" + "\\d{2}" + ".{68}" + "\\d{2}" + "."+ "\\d{2}" + "."+ "\\d{2}" + "."+ "\\d{2}" + "."+ "\\d{2}";
+//                        String patternString = "\\d{8}" + "-" +"\\d{2}";
+                        Pattern p = Pattern.compile(patternString);
+                        Matcher m = p.matcher(line);
+
+                        //模糊匹配 68
+                        while (m.find()) {
+                            String allStr,qh,s1,s2,s3,s4,s5;
+                            allStr = m.group();
+                            qh = allStr.substring(0, 7) + allStr.substring(9, 10);
+                            s1 = allStr.substring(79, 80);
+                            s2 = allStr.substring(82, 83);
+                            s3 = allStr.substring(85, 86);
+                            s4 = allStr.substring(88, 89);
+                            s5 = allStr.substring(91, 92);
+                            allStr = qh + " " + s1 + " " + s2 + " " + s3 + " " + s4 + " " + s5;
+
+//                            builder.append(allStr.length() + "\n");
+//                            builder.append(qh + " " + s1 + " " + s2 + " " + s3 + " " + s4 + " " + s5 + "\n");
+                            builder.append(allStr);
+
+                        }
+
                     }
 
+                    //关闭流
                     br.close();
                     isr.close();
                     is.close();
+
+                    //返回字符串
                     return builder.toString();
 
                 } catch (MalformedURLException e) {
@@ -141,8 +159,14 @@ public class MainActivity extends ActionBarActivity {
 
             @Override
             protected void onPostExecute(String s) {
+                //当 DoInBackground 执行完成后执行
+
+                //正则表达式 处理数据
+
                 tv = (TextView) findViewById(R.id.tv);
                 tv.setText(s);
+
+
                 super.onPostExecute(s);
             }
 
