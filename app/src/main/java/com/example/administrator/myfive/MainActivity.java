@@ -5,6 +5,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,7 +22,13 @@ import java.util.regex.Pattern;
 
 
 public class MainActivity extends ActionBarActivity {
+
+    //定义 UI 变量
     private TextView tv;
+    Button getData; //获取数据
+    Button showData;//显示数据
+    Button addData; //添加一条数据
+
 
     private Spinner s1,s2,s3,s4,s5;
     Integer[] dataSource = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
@@ -30,6 +37,21 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //绑定 UI 变量 到 ID
+        getData = (Button) findViewById(R.id.getData);
+        showData = (Button) findViewById(R.id.showData);
+        addData = (Button) findViewById(R.id.addData);
+
+        //获取数据 监听事件
+        getData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //从网络获取开奖数据并存入数据库
+                readURL("http://chart.cp.360.cn/zst/ln11?span=100");
+            }
+        });
+
 
         s1 = (Spinner) findViewById(R.id.spinner1);
         s2 = (Spinner) findViewById(R.id.spinner2);
@@ -46,36 +68,17 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
-    public void getData(View view) {
-        //从网络获取开奖数据并存入数据库
-        readURL("http://chart.cp.360.cn/zst/ln11?span=100");
+//    public class MyAsyncTask extends AsyncTask
 
-
-
-
-    }
-
-    public void addData(View view) {
-        //手动添加一条数据到数据库里
-
-
-
-
-
-    }
-
-    public void showData(View view) {
-        //从数据库中读入数据，显示数据
-
-
-
-    }
 
     /**
      * 从网络读取数据
      * @param url 网址
      */
     public void readURL(String url){
+
+
+
         new AsyncTask<String,Void,String>(){
 
             @Override

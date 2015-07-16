@@ -15,7 +15,6 @@
         <Button
             android:id="@+id/getData"
             android:text="@string/getData"
-            android:onClick="getData"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
@@ -23,7 +22,6 @@
         <Button
             android:id="@+id/showData"
             android:text="@string/showData"
-            android:onClick="showData"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
@@ -68,7 +66,6 @@
         <Button
             android:id="@+id/addData"
             android:text="@string/addData"
-            android:onClick="addData"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
