@@ -110,26 +110,28 @@ public class MainActivity extends ActionBarActivity {
                         //8   2    2   2   2   2   2        //需要的字符数
                         //0-7 9-10  79-80  82-83  85-86  88-89   91-92
                         //创建 Pattern 实例 并用该实例创建 Matcher 实例
-                        String patternString = "\\d{8}" + "-" + "\\d{2}" + ".{68}" + "\\d{2}" + "."+ "\\d{2}" + "."+ "\\d{2}" + "."+ "\\d{2}" + "."+ "\\d{2}";
-//                        String patternString = "\\d{8}" + "-" +"\\d{2}";
+                        String patternString = "\\d{8}-\\d{2}.{68}\\d{2}.\\d{2}.\\d{2}.\\d{2}.\\d{2}";
                         Pattern p = Pattern.compile(patternString);
                         Matcher m = p.matcher(line);
 
                         //模糊匹配 68
                         while (m.find()) {
+                            //临时字符串
                             String allStr,qh,s1,s2,s3,s4,s5;
-                            allStr = m.group();
-                            qh = allStr.substring(0, 7) + allStr.substring(9, 10);
-                            s1 = allStr.substring(79, 80);
-                            s2 = allStr.substring(82, 83);
-                            s3 = allStr.substring(85, 86);
-                            s4 = allStr.substring(88, 89);
-                            s5 = allStr.substring(91, 92);
-                            allStr = qh + " " + s1 + " " + s2 + " " + s3 + " " + s4 + " " + s5;
 
-//                            builder.append(allStr.length() + "\n");
-//                            builder.append(qh + " " + s1 + " " + s2 + " " + s3 + " " + s4 + " " + s5 + "\n");
-                            builder.append(allStr);
+                            //取得匹配的字符串
+                            allStr = m.group();
+
+                            //字符串截取赋值
+                            qh = allStr.substring(0, 8) + allStr.substring(9, 11);
+                            s1 = allStr.substring(79, 81);
+                            s2 = allStr.substring(82, 84);
+                            s3 = allStr.substring(85, 87);
+                            s4 = allStr.substring(88, 90);
+                            s5 = allStr.substring(91);
+//                            allStr = qh + " " + s1 + " " + s2 + " " + s3 + " " + s4 + " " + s5;
+
+                            builder.append(qh + " " + s1 + " " + s2 + " " + s3 + " " + s4 + " " + s5 + "\n");
 
                         }
 
