@@ -1,8 +1,8 @@
 package com.example.administrator.myfive;
 
-import android.app.Application;
 
 import com.activeandroid.ActiveAndroid;
+import com.activeandroid.app.Application;
 
 /**
  * Created by Administrator on 2015/7/17.

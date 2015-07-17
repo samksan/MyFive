@@ -23,4 +23,5 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile files('C:/Users/Administrator/AndroidStudioProjects/MyFive/libs/activeandroid-3.1-beta.jar')
+    compile files('libs/activeandroid-3.1-beta.jar')
 }
