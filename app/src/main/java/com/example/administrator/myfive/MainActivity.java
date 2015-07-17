@@ -10,6 +10,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.activeandroid.query.Delete;
+import com.activeandroid.query.Select;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,6 +20,7 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -93,11 +97,10 @@ public class MainActivity extends ActionBarActivity {
                 String line;
 
                 //字符串存储对象
-                StringBuilder builder = new StringBuilder();
+//                StringBuilder builder = new StringBuilder();
 
                 //数据库连接并删除表中的数据
-                Lotnum lotnum = new Lotnum();
-//                lotnum.delete();
+                new Delete().from(Lotnum.class).execute();
 
                 //把网页内容存储到 字符串存储实例
                 while ((line = br.readLine()) != null) {
@@ -113,47 +116,38 @@ public class MainActivity extends ActionBarActivity {
                     //模糊匹配 68
                     while (m.find()) {
                         //临时字符串
-                        String allStr;
-                        String qh;
-                        String s1;
-                        String s2;
-                        String s3;
-                        String s4;
-                        String s5;
+                        String allStr,qh;
+                        int i1,i2,i3,i4,i5;
 
                         //取得匹配的字符串
                         allStr = m.group();
 
                         //字符串截取赋值
                         qh = allStr.substring(0, 8) + allStr.substring(9, 11);
-                        s1 = allStr.substring(79, 81);
-                        s2 = allStr.substring(82, 84);
-                        s3 = allStr.substring(85, 87);
-                        s4 = allStr.substring(88, 90);
-                        s5 = allStr.substring(91);
+                        i1 = Integer.parseInt(allStr.substring(79, 81));
+                        i2 = Integer.parseInt(allStr.substring(82, 84));
+                        i3 = Integer.parseInt(allStr.substring(85, 87));
+                        i4 = Integer.parseInt(allStr.substring(88, 90));
+                        i5 = Integer.parseInt(allStr.substring(91));
 
-//                        lotnum.qh = qh;
-//                        lotnum.num1 = Integer.parseInt(s1);
-//                        lotnum.num2 = Integer.parseInt(s2);
-//                        lotnum.num3 = Integer.parseInt(s3);
-//                        lotnum.num4 = Integer.parseInt(s4);
-//                        lotnum.num5 = Integer.parseInt(s5);
-//                        lotnum.save();
+                        int[] intDesc = {i1, i2, i3, i4, i5};
+                        Arrays.sort(intDesc);
 
-                        builder.append(qh + " " + s1 + " " + s2 + " " + s3 + " " + s4 + " " + s5 + "\n");
-
-
+                        Lotnum lotnum = new Lotnum();
+                        lotnum.qh = qh;
+                        lotnum.num1 = intDesc[0];
+                        lotnum.num2 = intDesc[1];
+                        lotnum.num3 = intDesc[2];
+                        lotnum.num4 = intDesc[3];
+                        lotnum.num5 = intDesc[4];
+                        lotnum.save();
                     }
-
                 }
 
                 //关闭流
                 br.close();
                 isr.close();
                 is.close();
-
-                //返回字符串
-                return builder.toString();
 
             } catch (MalformedURLException e) {
                 e.printStackTrace();
@@ -172,13 +166,7 @@ public class MainActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(String s) {
             //当 DoInBackground 执行完成后执行
-
-            //正则表达式 处理数据
-
-            tv = (TextView) findViewById(R.id.tv);
-            tv.setText(s);
-
-
+            Toast.makeText(MainActivity.this, "执行完成，可以更新 UI 了！！！！！", Toast.LENGTH_LONG).show();
             super.onPostExecute(s);
         }
 
