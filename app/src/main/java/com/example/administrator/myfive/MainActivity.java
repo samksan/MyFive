@@ -96,6 +96,8 @@ public class MainActivity extends ActionBarActivity {
                 StringBuilder builder = new StringBuilder();
 
                 //数据库连接并删除表中的数据
+                Lotnum lotnum = new Lotnum();
+//                lotnum.delete();
 
                 //把网页内容存储到 字符串存储实例
                 while ((line = br.readLine()) != null) {
@@ -111,7 +113,13 @@ public class MainActivity extends ActionBarActivity {
                     //模糊匹配 68
                     while (m.find()) {
                         //临时字符串
-                        String allStr,qh,s1,s2,s3,s4,s5;
+                        String allStr;
+                        String qh;
+                        String s1;
+                        String s2;
+                        String s3;
+                        String s4;
+                        String s5;
 
                         //取得匹配的字符串
                         allStr = m.group();
@@ -124,8 +132,13 @@ public class MainActivity extends ActionBarActivity {
                         s4 = allStr.substring(88, 90);
                         s5 = allStr.substring(91);
 
-
-
+//                        lotnum.qh = qh;
+//                        lotnum.num1 = Integer.parseInt(s1);
+//                        lotnum.num2 = Integer.parseInt(s2);
+//                        lotnum.num3 = Integer.parseInt(s3);
+//                        lotnum.num4 = Integer.parseInt(s4);
+//                        lotnum.num5 = Integer.parseInt(s5);
+//                        lotnum.save();
 
                         builder.append(qh + " " + s1 + " " + s2 + " " + s3 + " " + s4 + " " + s5 + "\n");
 
