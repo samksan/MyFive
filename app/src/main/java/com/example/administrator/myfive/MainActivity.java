@@ -48,7 +48,8 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 //从网络获取开奖数据并存入数据库
-                readURL("http://chart.cp.360.cn/zst/ln11?span=100");
+                MyAsyncTask myAsyncTask = new MyAsyncTask();
+                myAsyncTask.execute("http://chart.cp.360.cn/zst/ln11?span=100");
             }
         });
 
@@ -185,13 +186,5 @@ public class MainActivity extends ActionBarActivity {
     }
 
 
-    /**
-     * 从网络读取数据
-     * @param url 网址
-     */
-    public void readURL(String url){
-        MyAsyncTask myAsyncTask = new MyAsyncTask();
-        myAsyncTask.execute(url);
 
-    }
 }
