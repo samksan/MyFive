@@ -41,11 +41,13 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        initUI();       //绑定 UI 变量 到 ID
 
-        //绑定 UI 变量 到 ID
-        getData = (Button) findViewById(R.id.getData);
-        showData = (Button) findViewById(R.id.showData);
-        addData = (Button) findViewById(R.id.addData);
+        s1.setAdapter(new ArrayAdapter<Integer>(this,android.R.layout.simple_expandable_list_item_1,dataSource));
+        s2.setAdapter(new ArrayAdapter<Integer>(this,android.R.layout.simple_expandable_list_item_1,dataSource));
+        s3.setAdapter(new ArrayAdapter<Integer>(this,android.R.layout.simple_expandable_list_item_1,dataSource));
+        s4.setAdapter(new ArrayAdapter<Integer>(this,android.R.layout.simple_expandable_list_item_1,dataSource));
+        s5.setAdapter(new ArrayAdapter<Integer>(this,android.R.layout.simple_expandable_list_item_1,dataSource));
 
         //获取数据 监听事件
         getData.setOnClickListener(new View.OnClickListener() {
@@ -57,20 +59,19 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
+    }
+
+    private void initUI() {
+        getData = (Button) findViewById(R.id.getData);
+        showData = (Button) findViewById(R.id.showData);
+        addData = (Button) findViewById(R.id.addData);
+        tv = (TextView) findViewById(R.id.tv);
 
         s1 = (Spinner) findViewById(R.id.spinner1);
         s2 = (Spinner) findViewById(R.id.spinner2);
         s3 = (Spinner) findViewById(R.id.spinner3);
         s4 = (Spinner) findViewById(R.id.spinner4);
         s5 = (Spinner) findViewById(R.id.spinner5);
-        s1.setAdapter(new ArrayAdapter<Integer>(this,android.R.layout.simple_expandable_list_item_1,dataSource));
-        s2.setAdapter(new ArrayAdapter<Integer>(this,android.R.layout.simple_expandable_list_item_1,dataSource));
-        s3.setAdapter(new ArrayAdapter<Integer>(this,android.R.layout.simple_expandable_list_item_1,dataSource));
-        s4.setAdapter(new ArrayAdapter<Integer>(this,android.R.layout.simple_expandable_list_item_1,dataSource));
-        s5.setAdapter(new ArrayAdapter<Integer>(this,android.R.layout.simple_expandable_list_item_1,dataSource));
-
-
-
     }
 
     public class MyAsyncTask extends AsyncTask<String,Void,String>{
@@ -168,6 +169,7 @@ public class MainActivity extends ActionBarActivity {
             //当 DoInBackground 执行完成后执行
             Toast.makeText(MainActivity.this, "执行完成，可以更新 UI 了！！！！！", Toast.LENGTH_LONG).show();
             super.onPostExecute(s);
+            tv.setText(s);
         }
 
         @Override

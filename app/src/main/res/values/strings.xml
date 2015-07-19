@@ -7,4 +7,5 @@
     <string name="getData">获取数据</string>
     <string name="addData">添加一条数据</string>
     <string name="showData">显示数据</string>
+    <string name="title_activity_show_data">ShowData</string>
 </resources>
