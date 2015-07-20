@@ -4,16 +4,29 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
 
+import com.activeandroid.query.Select;
 
+import java.util.List;
+
+/**
+ * 显示开奖号码的Activity
+ */
 public class ShowData extends ActionBarActivity {
-
+    ListView lv_showdata;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_data);
 
+        lv_showdata = (ListView) findViewById(R.id.lv_showData);
 
+        List<Lotnum> mLists = new Select().from(Lotnum.class).execute();
+
+        ShowdataBaseAdatper showdataBaseAdatper = new ShowdataBaseAdatper(this, mLists);
+
+        lv_showdata.setAdapter(showdataBaseAdatper);
 
     }
 

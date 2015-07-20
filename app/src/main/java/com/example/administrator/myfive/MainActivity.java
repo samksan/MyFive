@@ -1,5 +1,6 @@
 package com.example.administrator.myfive;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -56,6 +57,15 @@ public class MainActivity extends ActionBarActivity {
                 //从网络获取开奖数据并存入数据库
                 MyAsyncTask myAsyncTask = new MyAsyncTask();
                 myAsyncTask.execute("http://chart.cp.360.cn/zst/ln11?span=100");
+            }
+        });
+
+        //显示开奖数据的按钮监听事件
+        showData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ShowData.class);
+                startActivity(intent);
             }
         });
 
@@ -124,7 +134,7 @@ public class MainActivity extends ActionBarActivity {
                         allStr = m.group();
 
                         //字符串截取赋值
-                        qh = allStr.substring(0, 8) + allStr.substring(9, 11);
+                        qh = allStr.substring(4, 8) + allStr.substring(9, 11);
                         i1 = Integer.parseInt(allStr.substring(79, 81));
                         i2 = Integer.parseInt(allStr.substring(82, 84));
                         i3 = Integer.parseInt(allStr.substring(85, 87));
