@@ -1,13 +1,14 @@
 package com.example.administrator.myfive;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,42 +22,35 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends Activity {
 
     //定义 UI 变量
     private TextView tv;
     Button getData; //获取数据
     Button showData;//显示数据
     Button addData; //添加一条数据
-
-
-    private Spinner s1,s2,s3,s4,s5;
-    Integer[] dataSource = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+    String[] nums = {"1","2", "3","4","5","6","7","8","9","10","11"};//选择开奖号码的数组
+    List numsChecked;   //添加一条数据的选中状态的集合
+    String nowQh;       //数据库中最后一期的下一期的期号
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initUI();       //绑定 UI 变量 到 ID
-
-        s1.setAdapter(new ArrayAdapter<Integer>(this,android.R.layout.simple_expandable_list_item_1,dataSource));
-        s2.setAdapter(new ArrayAdapter<Integer>(this,android.R.layout.simple_expandable_list_item_1,dataSource));
-        s3.setAdapter(new ArrayAdapter<Integer>(this,android.R.layout.simple_expandable_list_item_1,dataSource));
-        s4.setAdapter(new ArrayAdapter<Integer>(this,android.R.layout.simple_expandable_list_item_1,dataSource));
-        s5.setAdapter(new ArrayAdapter<Integer>(this,android.R.layout.simple_expandable_list_item_1,dataSource));
+        initUI();
 
         //获取数据 监听事件
         getData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //从网络获取开奖数据并存入数据库
-                MyAsyncTask myAsyncTask = new MyAsyncTask();
-                myAsyncTask.execute("http://chart.cp.360.cn/zst/ln11?span=100");
+                getDataOnClick();
             }
         });
 
@@ -64,26 +58,125 @@ public class MainActivity extends ActionBarActivity {
         showData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, ShowData.class);
-                startActivity(intent);
+                showDataOnClick();
+            }
+        });
+
+        //手动添加一条开奖数据
+        addData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addDataOnClick();//手动添加一条开奖数据
             }
         });
 
     }
 
+    //手动添加一条开奖数据
+    private void addDataOnClick() {
+
+        //对话框构建器 初始化
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        Lotnum lqh = new Select().from(Lotnum.class).orderBy("qh DESC").executeSingle();
+        final String sqh = lqh.qh;
+
+        builder.setTitle(sqh);
+        builder.setIcon(R.mipmap.ic_launcher);
+        numsChecked = new ArrayList();
+
+        builder.setMultiChoiceItems(nums, null, new DialogInterface.OnMultiChoiceClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                if (isChecked) {
+                    numsChecked.add(nums[which]);
+                } else {
+                    if (numsChecked.contains(nums[which])) {
+                        numsChecked.remove(nums[which]);
+                    }
+                }
+            }
+        });
+
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+
+            /**
+             * This method will be invoked when a button in the dialog is clicked.
+             *
+             * @param dialog The dialog that received the click.
+             * @param which  The button that was clicked (e.g.
+             *               {@link DialogInterface#BUTTON1}) or the position
+             */
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            /**
+             * This method will be invoked when a button in the dialog is clicked.
+             *
+             * @param dialog The dialog that received the click.
+             * @param which  The button that was clicked (e.g.
+             *               {@link DialogInterface#BUTTON1}) or the position
+             */
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                int size = numsChecked.size();
+                if (size != 5) {
+                    Toast.makeText(MainActivity.this, "必须选择5个号码", Toast.LENGTH_SHORT).show();
+                    return;
+                } else {
+
+                    int[] numsTemp = new int[5];
+                    for (int i = 0; i < numsChecked.size(); i++) {
+                        numsTemp[i] =Integer.parseInt(String.valueOf(numsChecked.indexOf(i)));
+                    }
+
+                    Arrays.sort(numsTemp);
+                    Lotnum lotAdd = new Lotnum();
+                    lotAdd.qh = sqh;
+                    lotAdd.num1 = numsTemp[0];
+                    lotAdd.num2 = numsTemp[1];
+                    lotAdd.num3 = numsTemp[2];
+                    lotAdd.num4 = numsTemp[3];
+                    lotAdd.num5 = numsTemp[4];
+                    lotAdd.save();
+
+                    Toast.makeText(MainActivity.this, "numsChecked:" + numsChecked, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        Dialog dialog = builder.create();
+        dialog.show();
+
+    }
+
+    //显示开奖数据的按钮监听事件
+    private void showDataOnClick() {
+        //启动另一个Activity显示数据
+        Intent intent = new Intent(MainActivity.this, ShowData.class);
+        startActivity(intent);
+    }
+
+    //获取数据 监听事件
+    private void getDataOnClick() {
+        MyAsyncTask myAsyncTask = new MyAsyncTask();
+        myAsyncTask.execute("http://chart.cp.360.cn/zst/ln11?span=100");
+    }
+
+    //控件初始化 findViewByID
     private void initUI() {
         getData = (Button) findViewById(R.id.getData);
         showData = (Button) findViewById(R.id.showData);
         addData = (Button) findViewById(R.id.addData);
-        tv = (TextView) findViewById(R.id.tv);
 
-        s1 = (Spinner) findViewById(R.id.spinner1);
-        s2 = (Spinner) findViewById(R.id.spinner2);
-        s3 = (Spinner) findViewById(R.id.spinner3);
-        s4 = (Spinner) findViewById(R.id.spinner4);
-        s5 = (Spinner) findViewById(R.id.spinner5);
+
     }
 
+    //自定义内部类 MyAsyncTask 异步执行 网络下载数据并存入数据库
     public class MyAsyncTask extends AsyncTask<String,Void,String>{
         @Override
         protected String doInBackground(String... params) {
@@ -177,9 +270,8 @@ public class MainActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(String s) {
             //当 DoInBackground 执行完成后执行
-            Toast.makeText(MainActivity.this, "执行完成，可以更新 UI 了！！！！！", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, "执行更新完成！！！！！", Toast.LENGTH_SHORT).show();
             super.onPostExecute(s);
-            tv.setText(s);
         }
 
         @Override
