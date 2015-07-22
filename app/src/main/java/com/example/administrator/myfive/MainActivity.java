@@ -37,8 +37,7 @@ public class MainActivity extends Activity {
     Button showData;//显示数据
     Button addData; //添加一条数据
     String[] nums = {"1","2", "3","4","5","6","7","8","9","10","11"};//选择开奖号码的数组
-    List numsChecked;   //添加一条数据的选中状态的集合
-    String nowQh;       //数据库中最后一期的下一期的期号
+    ArrayList<String> numsChecked;   //添加一条数据的选中状态的集合
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,11 +78,11 @@ public class MainActivity extends Activity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         Lotnum lqh = new Select().from(Lotnum.class).orderBy("qh DESC").executeSingle();
-        final String sqh = lqh.qh;
+        final String sqh = String.valueOf(Integer.parseInt(lqh.qh) + 1);
 
         builder.setTitle(sqh);
         builder.setIcon(R.mipmap.ic_launcher);
-        numsChecked = new ArrayList();
+        numsChecked = new ArrayList<String>();
 
         builder.setMultiChoiceItems(nums, null, new DialogInterface.OnMultiChoiceClickListener() {
             @Override
@@ -128,12 +127,10 @@ public class MainActivity extends Activity {
                     Toast.makeText(MainActivity.this, "必须选择5个号码", Toast.LENGTH_SHORT).show();
                     return;
                 } else {
-
                     int[] numsTemp = new int[5];
                     for (int i = 0; i < numsChecked.size(); i++) {
-                        numsTemp[i] =Integer.parseInt(String.valueOf(numsChecked.indexOf(i)));
+                        numsTemp[i] =Integer.parseInt(numsChecked.get(i));
                     }
-
                     Arrays.sort(numsTemp);
                     Lotnum lotAdd = new Lotnum();
                     lotAdd.qh = sqh;
@@ -144,7 +141,7 @@ public class MainActivity extends Activity {
                     lotAdd.num5 = numsTemp[4];
                     lotAdd.save();
 
-                    Toast.makeText(MainActivity.this, "numsChecked:" + numsChecked, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "选择的数字:" + numsChecked, Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -238,7 +235,7 @@ public class MainActivity extends Activity {
                         Arrays.sort(intDesc);
 
                         Lotnum lotnum = new Lotnum();
-                        lotnum.qh = qh;
+                        lotnum.qh = String.valueOf(Integer.parseInt(qh) + 0);
                         lotnum.num1 = intDesc[0];
                         lotnum.num2 = intDesc[1];
                         lotnum.num3 = intDesc[2];
